@@ -1,11 +1,14 @@
 package com.archi;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+
 
 public class SimpleServer {
     final static int TYPE = 0, SENTENCE = 1;
@@ -14,8 +17,22 @@ public class SimpleServer {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting server");
 
-        System.out.println("Dataset read in " + readDataSet(1000) + " ms");
-        System.out.println(dataset.get(0).length);
+        System.out.println("Dataset read in " + readDataSet() + " ms");
+        System.out.println(dataset.size());
+
+        int portNumber = 5678;
+        try (
+            ServerSocket serverSocket = new ServerSocket(portNumber);
+            Socket clientSocket = serverSocket.accept();
+            PrintWriter out =
+                    new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(clientSocket.getInputStream()));
+        ) {
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static long readDataSet() {
@@ -24,19 +41,15 @@ public class SimpleServer {
 
     public static long readDataSet(int number) {
         long start = System.currentTimeMillis();
-        dataset = new ArrayList<String[]>();
-        try {
-            File file = new File("dbdata.txt");
-            Scanner myReader = new Scanner(file);
-            for (int i = 0; myReader.hasNextLine() && i != number; i++) {
-                String[] data = myReader.nextLine().split("@@@");
-                dataset.add(data);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+        String fileName = "dbdata.txt";
+        dataset = new ArrayList<>();
+
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+            stream.forEach(line -> dataset.add(line.split("@@@")));
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         return System.currentTimeMillis() - start;
     }
 
