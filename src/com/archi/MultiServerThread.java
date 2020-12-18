@@ -28,11 +28,14 @@ public class MultiServerThread extends Thread {
                         new InputStreamReader(socket.getInputStream()));
         ) {
             String inputLine;
-            String[] ss;
+            String[] ss, types;
             while((inputLine = in.readLine()) != null){
                 ss = inputLine.split(";", 2);
                 if(ss.length == 2){
-                    this.dataset.match(out, ss[0], ss[1]);
+                    types = ss[0].split(",");
+                    for (String type : types) {
+                        this.dataset.match(out, type, ss[1]);
+                    }
                 }
                 out.println("");
             }
