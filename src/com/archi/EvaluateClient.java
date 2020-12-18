@@ -97,18 +97,14 @@ public class EvaluateClient extends BaseServer {
 
         String userLine = "";
 
-        Random random = new Random();
-        int NbTags = random.nextInt() %5;
-        if(NbTags<0)
-            NbTags = - NbTags;
+
+        int NbTags = RandomFrom0toN(4);
 
         List<Integer> tags = new ArrayList<Integer>();
 
         for (int i = 0; i<NbTags; i++) {
-            Random rand2 = new Random();
-            int tag = rand2.nextInt() % 6;
-            if(tag<0)
-                tag = - tag;
+
+            int tag = RandomFrom0toN(5);
 
             if(tags.contains(tag)){
                 i--;
@@ -132,10 +128,22 @@ public class EvaluateClient extends BaseServer {
                 purString = purString + randomString.charAt(i);
         }
 
+        String[] words = purString.split(" ");
+        purString = words[RandomFrom0toN(words.length-1)];
+
 
         userLine = userLine + ";.*"+ purString+".*";
 
         return userLine;
+    }
+
+
+    public static int RandomFrom0toN(int n){
+        Random random = new Random();
+        int Nb = random.nextInt() %n+1;
+        if(Nb<0)
+            Nb = - Nb;
+        return Nb;
     }
 }
 
