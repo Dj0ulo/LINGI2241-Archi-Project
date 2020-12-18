@@ -1,22 +1,29 @@
 package com.archi;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class Dataset {
     public final static int TYPE = 0, SENTENCE = 1;
     protected List<String[]> dataset;
-    public long read() {
-        return read(Integer.MAX_VALUE);
+    public long load() {
+        return load(Integer.MAX_VALUE);
     }
 
-    public long read(int number) {
+    protected static Comparator<String[]> cmp = (a,b) -> {
+        if(a[TYPE].equals(b[TYPE])){
+            return a[SENTENCE].compareTo(b[SENTENCE]);
+        }
+        return Integer.parseInt(a[TYPE]) - Integer.parseInt(b[TYPE]);
+    };
+
+    public long load(int number) {
         long start = System.currentTimeMillis();
         String fileName = "dbdata.txt";
         dataset = new ArrayList<>();
@@ -33,4 +40,5 @@ public abstract class Dataset {
         return dataset.size();
     }
     public abstract void match(PrintWriter out, String type, String regex);
+
 }

@@ -44,14 +44,16 @@ public class Client {
                     else {
                         results.add(serverLine);
                         n++;
+//                        if(n%1000 == 0)
+//                            System.out.println(n);
                     }
                 }
                 long duration = System.currentTimeMillis() - start;
                 System.out.println("* "+n+" result(s) in "+duration+" ms *");
                 int limit = 30;
-                results.stream().limit(limit).forEach(System.out::println);
-                if(results.size() > limit)
-                    System.out.println("...");
+//                results.stream().limit(limit).forEach(System.out::println);
+//                if(results.size() > limit)
+//                    System.out.println("...");
                 System.out.println();
             }
         } catch (Exception e) {

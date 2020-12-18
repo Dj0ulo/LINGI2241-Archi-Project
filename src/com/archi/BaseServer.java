@@ -8,7 +8,7 @@ public abstract class BaseServer {
     protected static Dataset dataset;
 
     protected static void loadDataset(){
-        long readTime = dataset.read();
+        long readTime = dataset.load();
         System.out.println("Dataset of "+dataset.size()+" lines read in " + readTime + " ms");
     }
     protected static void listen(int portNumber){
