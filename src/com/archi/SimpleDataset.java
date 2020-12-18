@@ -7,12 +7,14 @@ import java.util.regex.Pattern;
 
 public class SimpleDataset extends Dataset{
 
-    public List<String[]> match(String type, String regex) {
-        List<String[]> result = new ArrayList<>();
+    public List<Entry> match(String type, String regex) {
+        List<Entry> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
-        for (String[] line : this.dataset) {
-            if ((type.equals("") || type.equals(line[0]))
-                    && pattern.matcher(line[1]).matches()) {
+        int intType = type.equals("") ? -1 : Integer.parseInt(type);
+
+        for (Entry line : this.dataset) {
+            if ((intType == -1 || intType == line.getType())
+                    && pattern.matcher(line.getSentence()).matches()) {
                 result.add(line);
             }
         }
@@ -20,7 +22,7 @@ public class SimpleDataset extends Dataset{
     }
     @Override
     public void match(PrintWriter out, String type, String regex){
-        List<String[]> list = this.match(type, regex);
-        list.forEach(line -> out.println(line[0]+"@@@"+line[1]));
+        List<Entry> list = this.match(type, regex);
+        list.forEach(line -> out.println(line.getType()+"@@@"+line.getSentence()));
     }
 }

@@ -50,10 +50,10 @@ public class Client {
                 }
                 long duration = System.currentTimeMillis() - start;
                 System.out.println("* "+n+" result(s) in "+duration+" ms *");
-                int limit = 30;
-//                results.stream().limit(limit).forEach(System.out::println);
-//                if(results.size() > limit)
-//                    System.out.println("...");
+                int limit = 5;
+                results.stream().limit(limit).forEach(System.out::println);
+                if(results.size() > limit)
+                    System.out.println("...");
                 System.out.println();
             }
         } catch (Exception e) {
