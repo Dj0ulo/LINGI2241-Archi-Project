@@ -9,65 +9,89 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Random;
 
+
 public class EvaluateClient extends BaseServer {
+
+    public static long[] Times;
+    public static int Finished = 0;
+
+    public static void modifyTimes(long time, int index){
+        Times[index] = time;
+        Finished++;
+    }
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting client");
 
         int portNumber = 5678;
+        int NbRequests = 5;       //arguments to modify
+        int mean = 3000;
+
+
+
         Scanner stdIn = new Scanner(System.in);
 
         dataset = new SimpleDataset();
         loadDataset();
 
-        connection(portNumber);
-    }
 
-    private static void connection(int portNumber){
-        try (
-                Socket socket = new Socket("localhost", portNumber);
-                PrintWriter toServer = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader fromServer = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()))
-        ) {
-            System.out.println("Connected to the server");
-
-            String userLine = RandomString();
-
-            System.out.println("Send > "+userLine+ ";.*Transport.*");
+        int[] waitingTimes = getPoissons(mean, NbRequests);
 
 
-            if(userLine.equals("quit"))
-                return;
 
-            System.out.println("* Sending request *");
+        String[] requests = new String[NbRequests];
 
-            toServer.println(userLine); // sending
-            long start = System.currentTimeMillis(); // start time
-
-            String serverLine;
-            List <String> results = new ArrayList<>();
-            int n = 0;
-            while ((serverLine = fromServer.readLine()) != null) {
-                if(serverLine.equals(""))
-                    break;
-                else {
-                    results.add(serverLine);
-                    n++;
-                }
-            }
-            long duration = System.currentTimeMillis() - start;
-            System.out.println("* "+n+" result(s) in "+duration+" ms *");
-            int limit = 30;
-            results.stream().limit(limit).forEach(System.out::println);
-
-            if(results.size() > limit)
-                System.out.println("...");
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
+        for(int i = 0; i < NbRequests; i++){
+            requests[i] = RandomString();
         }
+
+        ArrayList<MultiClientThread> threads = new ArrayList<>();
+
+        Times = new long[NbRequests];
+
+
+        for(int i = 0; i < NbRequests; i++){
+            MultiClientThread t = new MultiClientThread(requests[i], portNumber, i);
+            threads.add(t);
+            t.start();
+
+            Thread.sleep(waitingTimes[i]);
+        }
+
+        while(Finished < NbRequests)
+            Thread.sleep(20);
+
+        int i;
+        System.out.print("Finished in : [");
+        for(i = 0; i < Times.length-1; i++)
+            System.out.print(Times[i]+", ");
+        System.out.println(Times[i] + "] ms");
+
+
     }
+
+    private static int[] getPoissons(int mean, int nbRequest) {
+        int[] waitingTimes = new int[nbRequest];
+        for(int i = 0; i < nbRequest; i++){
+            waitingTimes[i] = getPoissonRandom(mean);
+        }
+        return waitingTimes;
+
+    }
+    private static int getPoissonRandom(double mean) {
+        Random r = new Random();
+        double L = Math.exp(-mean);
+        int k = 0;
+        double p = 1.0;
+        do {
+            p = p * r.nextDouble();
+            k++;
+        } while (p > L);
+        return k - 1;
+    }
+
+
+
 
     private static String RandomString(){
 
@@ -79,8 +103,6 @@ public class EvaluateClient extends BaseServer {
             NbTags = - NbTags;
 
         List<Integer> tags = new ArrayList<Integer>();
-
-        NbTags = 1;
 
         for (int i = 0; i<NbTags; i++) {
             Random rand2 = new Random();
@@ -100,13 +122,18 @@ public class EvaluateClient extends BaseServer {
             }
         }
 
-        System.out.println(dataset.getRandomString());
+        String randomString = dataset.getRandomString();
+        String purString = "";
+
+        for(int i = 0; i<randomString.length();i++){
+            if (randomString.charAt(i) =='.')
+                purString = purString+"\\.";
+            else
+                purString = purString + randomString.charAt(i);
+        }
 
 
-
-
-
-        userLine = userLine+ ";.*Transport.*";
+        userLine = userLine + ";.*"+ purString+".*";
 
         return userLine;
     }
