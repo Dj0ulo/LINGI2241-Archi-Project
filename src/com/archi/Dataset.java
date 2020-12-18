@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 
 public abstract class Dataset {
@@ -35,6 +36,13 @@ public abstract class Dataset {
         }
 
         return System.currentTimeMillis() - start;
+    }
+    public String getRandomString(){
+        Random rand2 = new Random();
+        int index = rand2.nextInt() % dataset.size();
+        if(index<0)
+            index = - index;
+        return dataset.get(index)[1];
     }
     public int size(){
         return dataset.size();
