@@ -43,8 +43,7 @@ public class EvaluateClient extends BaseServer {
 
         MakeNRequests(portNumber, NbRequests,lambda);
         int sum = 0;
-        for(int i = 0; i< Times.length; i++)
-            sum +=Times[i];
+        for (long time : Times) sum += time;
         try {
             FileWriter myWriter = new FileWriter("MeanTimes.txt", true);
             myWriter.write(NbRequests+";"+sum/NbRequests+"\r\n");
@@ -110,7 +109,7 @@ public class EvaluateClient extends BaseServer {
 
     private static String RandomString(){ // returns a string respecting the format of requests specified in the project description. number of tags, tags, number of line and word in the line each follow a uniform distribution
 
-        String userLine = "";
+        StringBuilder userLine = new StringBuilder();
 
 
         int NbTags = RandomFrom0toN(4);
@@ -125,38 +124,39 @@ public class EvaluateClient extends BaseServer {
             else{
                 tags.add(tag);
                 if(tags.size()>= NbTags)
-                    userLine= userLine+tag;
+                    userLine.append(tag);
                 else
-                    userLine = userLine + tag + ",";
+                    userLine.append(tag).append(",");
             }
         }
 
         String randomString = dataset.getRandomString();
-        String purString = "";
+        StringBuilder purString = new StringBuilder();
 
         for(int i = 0; i<randomString.length();i++){
             if (randomString.charAt(i) =='.')
-                purString = purString+"\\.";
+                purString.append("\\.");
             else
-                purString = purString + randomString.charAt(i);
+                purString.append(randomString.charAt(i));
         }
 
-        String[] words = purString.split(" ");
-        purString = words[RandomFrom0toN(words.length-1)];
+        String[] words = purString.toString().split(" ");
+        purString = new StringBuilder(words[RandomFrom0toN(words.length - 1)]);
 
 
-        userLine = userLine + ";.*"+ purString+".*";
+        userLine.append(";.*").append(purString).append(".*");
 
-        return userLine;
+        return userLine.toString();
     }
 
 
     public static int RandomFrom0toN(int n){ // return a random int from 0 to n with uniform distribution
-        Random random = new Random();
-        int Nb = random.nextInt() %(n+1);
-        if(Nb<0)
-            Nb = - Nb;
-        return Nb;
+        return (int)(Math.random()*n);
+//        Random random = new Random();
+//        int Nb = random.nextInt() %(n+1);
+//        if(Nb<0)
+//            Nb = - Nb;
+//        return Nb;
     }
 }
 
