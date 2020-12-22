@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiClientThread extends Thread {
-    private String request = "";
-    private int portNumber = 0;
-    private int nbThread = 0;
+    private String request;
+    private int portNumber;
+    private int nbThread;
     public MultiClientThread(String request, int portNumber, int nbThread) {
         super("MultiClientThread");
         this.request = request;
@@ -48,13 +48,13 @@ public class MultiClientThread extends Thread {
 
             EvaluateClient.modifyTimes(duration, nbThread);
 
-            System.out.println("* thread "+nbThread+" : "+n+" result(s) for "+ request +" in "+duration+" ms *");
+            //System.out.println("* thread "+nbThread+" : "+n+" result(s) for "+ request +" in "+duration+" ms *");
             /*int limit = 30;
             results.stream().limit(limit).forEach(System.out::println);
 
             if(results.size() > limit)
                 System.out.println("...");*/
-            System.out.println();
+            //System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
         }
