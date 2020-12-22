@@ -50,7 +50,6 @@ public class OptimizedDataset extends Dataset {
                 prev = this.dataset.get(i).getType();
             }
         }
-
         return System.currentTimeMillis() - start;
     }
 
@@ -83,17 +82,20 @@ public class OptimizedDataset extends Dataset {
     }
 
     public void freq() {
-        int[] table = new int[256];
+        HashMap<Character, Integer> f = new HashMap<>();
         this.dataset.forEach(line -> {
             for (int i = 0; i < line.getSentence().length(); i++) {
-                char c = line.getSentence().charAt(i);
-                if (c < 256)
-                    table[c]++;
+                Character c = line.getSentence().charAt(i);
+                if(f.containsKey(c)){
+                    f.put(c, f.get(c) + 1);
+                }else{
+                    f.put(c, 1);
+                }
             }
         });
-        for (int i = 0; i < table.length; i++) {
-            System.out.println(Character.toString(i) + " : " + table[i]);
-        }
+
+        f.forEach((k,v) -> System.out.println((int)k+" : "+v));
+        System.out.println(f.size()+" different char");
     }
 
     private int[] indexType(int type) {

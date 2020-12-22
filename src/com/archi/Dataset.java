@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public abstract class Dataset {
     public final static String FILENAME = "dbdata.txt";
     protected List<Entry> dataset;
-    class Entry implements Comparable<Entry>{
+    protected static class Entry implements Comparable<Entry>{
         private final int type;
         private final String sentence;
         private int count;
