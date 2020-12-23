@@ -22,7 +22,7 @@ public class EvaluateClient {
         dataset.load();
 
         int portNumber = 5678;
-        double lambda = 1.0/3000; // mean time between 2 arrivals is 1/lambda
+        double lambda = 0.0003333333333333; // mean time between 2 arrivals is 1/lambda
         int min = 5;
         int max = 20;
         int step = 5;

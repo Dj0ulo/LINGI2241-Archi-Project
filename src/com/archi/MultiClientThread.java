@@ -21,7 +21,7 @@ public class MultiClientThread extends Thread {
     public void run() {
         System.out.println("Thread nb "+nbThread+" launched");
         try (
-                Socket socket = new Socket("2620:9b::192c:f4e4", portNumber);
+                Socket socket = new Socket("localhost", portNumber);
                 PrintWriter toServer = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader fromServer = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()))
@@ -36,7 +36,7 @@ public class MultiClientThread extends Thread {
             String serverLine;
             List<String> results = new ArrayList<>();
             int n = 0;
-            while ((serverLine = fromServer.readLine()jtg) != null) {
+            while ((serverLine = fromServer.readLine()) != null) {
                 if(serverLine.equals(""))
                     break;
                 else {
