@@ -3,7 +3,6 @@ package com.archi;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class SimpleServer extends BaseServer {
     public static void main(String[] args)  {
@@ -13,7 +12,7 @@ public class SimpleServer extends BaseServer {
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             Socket client;
             while ((client = serverSocket.accept()) != null) {
-                RequestManager.respond(client, dataset);
+                ServerRequestManager.respond(client, dataset);
             }
         } catch (IOException e) {
             e.printStackTrace();

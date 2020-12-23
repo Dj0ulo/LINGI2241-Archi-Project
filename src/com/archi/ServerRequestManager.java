@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class RequestManager {
+public class ServerRequestManager {
 
     public static void respond(Socket socket, Dataset dataset) {
         try (

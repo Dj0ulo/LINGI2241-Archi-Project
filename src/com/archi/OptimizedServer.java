@@ -22,7 +22,7 @@ public class OptimizedServer extends BaseServer{
             while ((client = serverSocket.accept()) != null) {
                 System.out.println("New request !");
                 final Socket currentClient = client;
-                executor.submit(() -> RequestManager.respond(currentClient, dataset));
+                executor.submit(() -> ServerRequestManager.respond(currentClient, dataset));
             }
         } catch (IOException e) {
             e.printStackTrace();
