@@ -1,5 +1,10 @@
 package com.archi;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.LongStream;
+
 public class Log {
     public static final String RESET = "\u001B[0m";
     public static final String BLACK = "\u001B[30m";
@@ -13,5 +18,12 @@ public class Log {
 
     public static void p(String str){
         System.out.println(str+Log.RESET);
+    }
+    public static void file(String filename, String str){
+        try (FileWriter myWriter = new FileWriter(filename, false)) {
+            myWriter.write(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

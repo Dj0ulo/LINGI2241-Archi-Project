@@ -1,21 +1,46 @@
 package com.archi;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class SimpleDataset extends Dataset{
+    private final String filename;
 
-    public List<Entry> match(String type, String regex) {
-        List<Entry> result = new ArrayList<>();
-        Pattern pattern = Pattern.compile(regex);
-        int intType = type.equals("") ? -1 : Integer.parseInt(type);
+    public SimpleDataset(){
+        this.filename = "dbdata.txt";
+    }
 
-        for (Entry line : this.dataset) {
-            if ((intType == -1 || intType == line.getType())
-                    && pattern.matcher(line.getSentence()).matches()) {
-                result.add(line);
+    @Override
+    public long load(int number) {
+        long start = System.currentTimeMillis();
+
+        try (Stream<String> stream = Files.lines(Paths.get(filename))) {
+            stream.limit(number).forEach(line -> dataset.add(new Dataset.Entry(line.split("@@@"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return System.currentTimeMillis() - start;
+    }
+
+
+    public List<Dataset.Entry> match(String type, String regex) {
+        List<Dataset.Entry> result = new ArrayList<>();
+        Pattern pattern = compileRegex(regex);
+        if(pattern != null){
+            int intType = type.equals("") ? -1 : Integer.parseInt(type);
+
+            for (Dataset.Entry line : this.dataset) {
+                if ((intType == -1 || intType == line.getType())
+                        && pattern.matcher(line.getSentence()).matches()) {
+                    result.add(line);
+                }
             }
         }
         return result;
@@ -23,7 +48,7 @@ public class SimpleDataset extends Dataset{
     @Override
     public long match(PrintWriter out, String type, String regex){
         long start = System.currentTimeMillis();
-        List<Entry> list = this.match(type, regex);
+        List<Dataset.Entry> list = this.match(type, regex);
         list.forEach(line -> out.println(line.getType()+"@@@"+line.getSentence()));
         return System.currentTimeMillis() - start;
     }

@@ -14,7 +14,7 @@ public abstract class BaseServer {
         else
             System.out.println("Starting *simple* server");
 
-        dataset = opti ? new OptimizedDataset() : new SimpleDataset();
+        dataset = opti ? new OptiFileDataset() : new SimpleDataset();
 
         final long readTime = dataset.load();
         System.out.println("Dataset of " + dataset.size() + " lines read in " + readTime + " ms");

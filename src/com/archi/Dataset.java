@@ -1,16 +1,16 @@
 package com.archi;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public abstract class Dataset {
-    public final static String FILENAME = "dbdata.txt";
-    protected List<Entry> dataset;
-    protected class Entry implements Comparable<Entry>{
+
+    protected List<Dataset.Entry> dataset = new ArrayList<>();
+
+    protected static class Entry implements Comparable<Entry> {
         private final int type;
         private final String sentence;
         private int count;
@@ -20,6 +20,7 @@ public abstract class Dataset {
             this.sentence = sentence;
             this.count = 1;
         }
+
         public Entry(String[] line) {
             this.type = Integer.parseInt(line[0]);
             this.sentence = line[1];
@@ -72,32 +73,101 @@ public abstract class Dataset {
             return sb.toString();
         }
     }
+
     public long load() {
         return load(Integer.MAX_VALUE);
     }
 
-    public long load(int number) {
-        long start = System.currentTimeMillis();
-        dataset = new ArrayList<>();
+    public abstract long load(int number);
 
-        try (Stream<String> stream = Files.lines(Paths.get(FILENAME))) {
-            stream.limit(number).forEach(line -> dataset.add(new Entry(line.split("@@@"))));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return System.currentTimeMillis() - start;
-    }
-    public String getRandomString(){
+    public String getRandomString() {
         Random rand2 = new Random();
         int index = rand2.nextInt() % dataset.size();
-        if(index<0)
-            index = - index;
+        if (index < 0)
+            index = -index;
         return dataset.get(index).getSentence();
     }
-    public int size(){
+
+    /**
+     * @return the number of different entries
+     */
+    public int size() {
         return dataset.size();
     }
+
+    protected Pattern compileRegex(String regex) {
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            return pattern;
+        } catch (PatternSyntaxException e) {
+            Log.p(Log.RED + e.getMessage());
+        }
+        return null;
+    }
+
     public abstract long match(PrintWriter out, String type, String regex);
+
+    private static String[] words(String sentence) {
+        return words(sentence, 1);
+    }
+
+    private static String[] words(String sentence, int sizeMin) {
+        Pattern p = Pattern.compile("[a-zA-Z]{"+sizeMin+",}");
+
+        List<String> list = new ArrayList<>();
+        Matcher matcher = p.matcher(sentence);
+        while (matcher.find()) {
+            list.add(matcher.group());
+        }
+        return list.toArray(new String[0]);
+    }
+
+    public Entry random() {
+        return dataset.get((int) (Math.random() * dataset.size()));
+    }
+
+    public String randomWord(int sizeMin) {
+        String[] words;
+        do {
+            words = words(random().getSentence(), sizeMin);
+        } while (words.length == 0);
+        return words[(int) (Math.random() * words.length)];
+    }
+
+    public int randomType() {
+        return random().getType();
+    }
+
+    public HashMap<String, Integer> wordFreq() {
+        HashMap<String, Integer> f = new HashMap<>();
+        this.dataset.forEach(entry -> {
+            String[] words = words(entry.getSentence());
+            for (String word : words) {
+                if (f.containsKey(word)) {
+                    f.put(word, f.get(word) + entry.getCount());
+                } else {
+                    f.put(word, entry.getCount());
+                }
+            }
+        });
+        return f;
+    }
+
+    public void charFreq() {
+        HashMap<Character, Integer> f = new HashMap<>();
+        this.dataset.forEach(entry -> {
+            for (int i = 0; i < entry.getSentence().length(); i++) {
+                Character c = entry.getSentence().charAt(i);
+                if (f.containsKey(c)) {
+                    f.put(c, f.get(c) + entry.getCount());
+                } else {
+                    f.put(c, entry.getCount());
+                }
+            }
+        });
+
+        f.forEach((k, v) -> System.out.println((int) k + " : " + v));
+        System.out.println(f.size() + " different char");
+    }
 
 }

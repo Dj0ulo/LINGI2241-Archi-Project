@@ -22,6 +22,7 @@ public class OptimizedServer extends BaseServer{
             while ((client = serverSocket.accept()) != null) {
                 final Socket currentClient = client;
                 executor.submit(() -> ServerRequestManager.respond(currentClient, dataset, true));
+                Log.p("Server thread queue : "+Log.RED+" "+executor.getQueue().size());
             }
         } catch (IOException e) {
             e.printStackTrace();
