@@ -1,6 +1,7 @@
 package com.archi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.io.FileWriter;
@@ -12,7 +13,6 @@ import java.util.stream.LongStream;
 public class EvaluateClient {
 
     private static Random random;
-    private static long[] durations;
 
     private static String address;
     private static int port;
@@ -25,9 +25,10 @@ public class EvaluateClient {
         // load dataset to make random request based on it
         dataset = new SimpleDataset();
         dataset.load();
+        System.out.println("Dataset loaded");
 
         // server info
-        address = "localhost";
+        address = "2620:9b::193f:5de1";
         port = 5678;
 
         // distribution parameters
@@ -44,15 +45,19 @@ public class EvaluateClient {
      */
     public static void iterateOnNbRequests(int min, int max, int step, double lambda) {
         try (FileWriter myWriter = new FileWriter("MeanTimes.txt", false)) {
-            myWriter.write(lambda + "\r\n");
+            myWriter.write(lambda + "\n");
 
 
             for (int i = min; i <= max; i += step) {// i = number of requests for that iteration
                 // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
                 // Writes mean times to MeanTimes.txt
-                makeNRequests(i, lambda);
+                long[] durations = makeNRequests(i, lambda);
                 long sum = LongStream.of(durations).sum(); // make the sum of the array
-                myWriter.write(i + ";" + sum / i + "\r\n");
+
+                // print durations
+                Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms :" +
+                        " mean = " + Log.RED + (sum / i) + " ms\n");
+                myWriter.write(i + "," + (sum / i) + "\n");
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -60,11 +65,12 @@ public class EvaluateClient {
 
     }
 
+
     /**
      * calculate the arrival times and  launches the thread following these timers
      */
-    public static void makeNRequests(int nbRequests, double lambda) throws InterruptedException {
-
+    public static long[] makeNRequests(int nbRequests, double lambda) throws InterruptedException {
+        Log.p(Log.BLUE + "* Making " + nbRequests + " requests *");
         double[] waitingTimes = getPoissons(lambda, nbRequests);
 
         String[] requests = new String[nbRequests];
@@ -80,12 +86,17 @@ public class EvaluateClient {
             final String request = requests[i];
 
             completionService.submit(() -> ClientRequestManager.makeRequest(address, port, request));
-            System.out.println("Thread nb "+i+" launched");
-            Thread.sleep((int) waitingTimes[i]);
+            Log.p("Thread n°" + (i + 1) + " launched. Waiting " + (int) waitingTimes[i] + " ms...");
+
+            for (int k=(int) waitingTimes[i]/1000;k>=0;k--){
+                System.out.print("Waiting " + k + " s...\r");
+                Thread.sleep(1000);
+            }
+            Thread.sleep(((int) waitingTimes[i])%1000);
         }
 
         // wait for thread and retrieve durations
-        durations = new long[nbRequests];
+        long[] durations = new long[nbRequests];
         for (int i = 0; i < nbRequests; i++) {
             Future<Long> future = completionService.take();
             try {
@@ -95,13 +106,7 @@ public class EvaluateClient {
             }
         }
 
-        // print durations
-        int i;
-        System.out.print("Finished in : [");
-        for (i = 0; i < durations.length - 1; i++)
-            System.out.print(durations[i] + ", ");
-        System.out.println(durations[i] + "] ms");
-
+        return durations;
     }
 
     /**
@@ -122,7 +127,7 @@ public class EvaluateClient {
      */
     private static String randomString() {
 
-        StringBuilder userLine = new StringBuilder();
+        StringBuilder request = new StringBuilder();
 
 
         int NbTags = random.nextInt(5);
@@ -136,9 +141,9 @@ public class EvaluateClient {
             } else {
                 tags.add(tag);
                 if (tags.size() >= NbTags)
-                    userLine.append(tag);
+                    request.append(tag);
                 else
-                    userLine.append(tag).append(",");
+                    request.append(tag).append(",");
             }
         }
 
@@ -155,9 +160,9 @@ public class EvaluateClient {
         String[] words = purString.toString().split(" ");
         purString = new StringBuilder(words[random.nextInt(words.length)]);
 
-        userLine.append(";.*").append(purString).append(".*");
+        request.append(";.*").append(purString).append(".*");
 
-        return userLine.toString();
+        return request.toString();
     }
 }
 

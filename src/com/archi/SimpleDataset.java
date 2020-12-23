@@ -21,8 +21,10 @@ public class SimpleDataset extends Dataset{
         return result;
     }
     @Override
-    public void match(PrintWriter out, String type, String regex){
+    public long match(PrintWriter out, String type, String regex){
+        long start = System.currentTimeMillis();
         List<Entry> list = this.match(type, regex);
         list.forEach(line -> out.println(line.getType()+"@@@"+line.getSentence()));
+        return System.currentTimeMillis() - start;
     }
 }

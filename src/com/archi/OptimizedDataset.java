@@ -54,31 +54,34 @@ public class OptimizedDataset extends Dataset {
     }
 
     @Override
-    public void match(PrintWriter out, String type, String regex) {
-        Pattern pattern = Pattern.compile(regex);
-        if (regex.equals(""))
-            return;
-        int intType = type.equals("") ? -1 : Integer.parseInt(type);
-        int[] bounds = indexType(intType);
-        List<Integer> indexes = new ArrayList<>();
-        StringBuilder result = new StringBuilder();
+    public long match(PrintWriter out, String type, String regex) {
+        long start = System.currentTimeMillis();
 
-        Integer[] cacheLines = cache.get(type, regex);
-        if (cacheLines == null) {
-            for (int i = bounds[0]; i < bounds[1]; i++) {
-                Entry entry = this.dataset.get(i);
-                if (pattern.matcher(entry.getSentence()).matches()) {
-                    indexes.add(i);
-                    result.append(entry);
+        Pattern pattern = Pattern.compile(regex);
+        if (!regex.equals("")){
+            int intType = type.equals("") ? -1 : Integer.parseInt(type);
+            int[] bounds = indexType(intType);
+            List<Integer> indexes = new ArrayList<>();
+            StringBuilder result = new StringBuilder();
+
+            Integer[] cacheLines = cache.get(type, regex);
+            if (cacheLines == null) {
+                for (int i = bounds[0]; i < bounds[1]; i++) {
+                    Entry entry = this.dataset.get(i);
+                    if (pattern.matcher(entry.getSentence()).matches()) {
+                        indexes.add(i);
+                        result.append(entry);
+                    }
+                }
+                cache.add(type, regex, indexes.toArray(new Integer[0]));
+            } else {
+                for (Integer cacheLine : cacheLines) {
+                    result.append(this.dataset.get(cacheLine));
                 }
             }
-            cache.add(type, regex, indexes.toArray(new Integer[0]));
-        } else {
-            for (Integer cacheLine : cacheLines) {
-                result.append(this.dataset.get(cacheLine));
-            }
+            out.write(result.toString());
         }
-        out.write(result.toString());
+        return System.currentTimeMillis() - start;
     }
 
     public void freq() {

@@ -20,9 +20,8 @@ public class OptimizedServer extends BaseServer{
         try (ServerSocket serverSocket = new ServerSocket(portNumber)){
             Socket client;
             while ((client = serverSocket.accept()) != null) {
-                System.out.println("New request !");
                 final Socket currentClient = client;
-                executor.submit(() -> ServerRequestManager.respond(currentClient, dataset));
+                executor.submit(() -> ServerRequestManager.respond(currentClient, dataset, true));
             }
         } catch (IOException e) {
             e.printStackTrace();
