@@ -11,36 +11,26 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class MultiServerThread extends Thread {
-    private Socket socket = null;
-    private final Dataset dataset;
+public class RequestManager {
 
-    public MultiServerThread(Dataset dataset, Socket socket) {
-        super("MultiServerThread");
-        this.socket = socket;
-        this.dataset = dataset;
-    }
-    public void run() {
+    public static void respond(Socket socket, Dataset dataset) {
         try (
                 PrintWriter out =
                         new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
         ) {
-            String inputLine;
-            String[] ss, types;
-            while((inputLine = in.readLine()) != null){
-                ss = inputLine.split(";", 2);
-                if(ss.length == 2){
-                    types = ss[0].split(",");
-                    for (String type : types) {
-                        this.dataset.match(out, type, ss[1]);
-                    }
+            String request = in.readLine();
+            String[] ss = request.split(";", 2);
+            if (ss.length <= 2) {
+                String[] types = (ss.length == 1) ? new String[]{""} : ss[0].split(",");
+                String regex = (ss.length == 1) ? ss[0] : ss[1];
+                for (String type : types) {
+                    dataset.match(out, type, regex);
                 }
-                out.println("");
             }
-
-        } catch (IOException e) {
+            out.println("");
+        } catch (IOException ignored) {
         } finally {
             try {
                 socket.close();
@@ -48,6 +38,5 @@ public class MultiServerThread extends Thread {
                 e.printStackTrace();
             }
         }
-
     }
 }

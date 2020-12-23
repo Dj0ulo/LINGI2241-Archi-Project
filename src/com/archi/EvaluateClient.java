@@ -9,16 +9,17 @@ import java.io.IOException;
 import java.util.Arrays;
 
 
-public class EvaluateClient extends BaseServer {
+public class EvaluateClient {
 
     public static long[] Times;
     public static int Finished;
 
+    private static Dataset dataset;
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
         dataset = new SimpleDataset();
-        loadDataset();
+        dataset.load();
 
         int portNumber = 5678;
         double lambda = 0.0003333333333333; // mean time between 2 arrivals is 1/lambda
