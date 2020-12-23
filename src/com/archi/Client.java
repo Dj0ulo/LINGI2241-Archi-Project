@@ -13,22 +13,22 @@ public class Client {
     public static void main(String[] args) {
         System.out.println("Starting client");
 
-        String address = "adresse";
+        String address = "2620:9b::192c:f4e4";
         int portNumber = 5678;
         Scanner stdIn = new Scanner(System.in);
         System.out.println("Connection to the server");
 
         while (true) {
+            System.out.print("Send > ");
+            String userLine = stdIn.nextLine();// read line from user
+            if (userLine.equals("quit"))
+                return;
             try (
                     Socket socket = new Socket(address, portNumber);
                     PrintWriter toServer = new PrintWriter(socket.getOutputStream(), true);
                     BufferedReader fromServer = new BufferedReader(
                             new InputStreamReader(socket.getInputStream()));
             ) {
-                System.out.print("Send > ");
-                String userLine = stdIn.nextLine();// read line from user
-                if (userLine.equals("quit"))
-                    return;
                 System.out.println("* Sending request *");
 
                 toServer.println(userLine); // sending
