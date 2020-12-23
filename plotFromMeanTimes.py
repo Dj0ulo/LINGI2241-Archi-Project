@@ -16,7 +16,7 @@ def readData():
     fd = open("MeanTimes.txt", "r")
     PoissonMean = float(fd.readline())
     for x in fd:
-        strings = x.split(';')
+        strings = x.split(',')
         NbRequests = int(strings[0])
         Time = float (strings[1])
         

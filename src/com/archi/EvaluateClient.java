@@ -32,33 +32,35 @@ public class EvaluateClient {
         port = 5678;
 
         // distribution parameters
-        double lambda = 0.0003333333333333; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0/1500; // mean time between 2 arrivals is 1/lambda
         int min = 5;
         int max = 20;
         int step = 5;
-        int iterPerNbIter = 10;
+        int iterPerNbIter = 5;
 
-        iterateOnNbRequests(min, max, step, lambda);
+        iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
 
     /**
      * iterate from min to max with step step on each iteration, these are used as NbRequests
      */
-    public static void iterateOnNbRequests(int min, int max, int step, double lambda) {
+    public static void iterateOnNbRequests(int min, int max, int step, double lambda, int iterPerNbIter) {
         try (FileWriter myWriter = new FileWriter("MeanTimes.txt", false)) {
             myWriter.write(lambda + "\n");
 
 
             for (int i = min; i <= max; i += step) {// i = number of requests for that iteration
-                // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
-                // Writes mean times to MeanTimes.txt
-                long[] durations = makeNRequests(i, lambda);
-                long sum = LongStream.of(durations).sum(); // make the sum of the array
+                for(int j=0; j < iterPerNbIter; j++) {
+                    // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
+                    // Writes mean times to MeanTimes.txt
+                    long[] durations = makeNRequests(i, lambda);
+                    long sum = LongStream.of(durations).sum(); // make the sum of the array
 
-                // print durations
-                Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms :" +
-                        " mean = " + Log.RED + (sum / i) + " ms\n");
-                myWriter.write(i + "," + (sum / i) + "\n");
+                    // print durations
+                    Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms :" +
+                            " mean = " + Log.RED + (sum / i) + " ms\n");
+                    myWriter.write(i + "," + (sum / i) + "\n");
+                }
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
