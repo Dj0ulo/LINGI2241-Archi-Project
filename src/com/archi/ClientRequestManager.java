@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ClientRequestManager extends Thread {
+public class ClientRequestManager {
 
     public static long makeRequest(String address, int port, String request){
         return makeRequest(address, port, request, false);

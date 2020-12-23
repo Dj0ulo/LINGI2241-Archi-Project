@@ -18,7 +18,7 @@ public class EvaluateClient {
     private static int port;
     private static Dataset dataset;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) {
         // init random class
         random = new Random();
 
