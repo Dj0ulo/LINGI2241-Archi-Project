@@ -36,6 +36,7 @@ public class EvaluateClient {
         int min = 5;
         int max = 20;
         int step = 5;
+        int iterPerNbIter = 10;
 
         iterateOnNbRequests(min, max, step, lambda);
     }
@@ -165,5 +166,3 @@ public class EvaluateClient {
         return request.toString();
     }
 }
-
-
