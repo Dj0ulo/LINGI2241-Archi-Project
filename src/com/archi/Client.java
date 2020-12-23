@@ -11,9 +11,9 @@ import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) {
-        System.out.println("Starting client");
+        System.out.println("Starting manual client");
 
-        String address = "2620:9b::192c:f4e4";
+        String address = "2620:9b::193f:5de1";//"2620:9b::192c:f4e4";
         int portNumber = 5678;
         Scanner stdIn = new Scanner(System.in);
         System.out.println("Connection to the server");
@@ -22,44 +22,9 @@ public class Client {
             System.out.print("Send > ");
             String userLine = stdIn.nextLine();// read line from user
             if (userLine.equals("quit"))
-                return;
-            try (
-                    Socket socket = new Socket(address, portNumber);
-                    PrintWriter toServer = new PrintWriter(socket.getOutputStream(), true);
-                    BufferedReader fromServer = new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
-            ) {
-                System.out.println("* Sending request *");
+                break;
 
-                toServer.println(userLine); // sending
-                long start = System.currentTimeMillis(); // start time
-
-                String serverLine;
-                List<String> results = new ArrayList<>();
-                int n = 0;
-                while ((serverLine = fromServer.readLine()) != null) {
-                    if (serverLine.equals(""))
-                        break;
-                    else {
-                        results.add(serverLine);
-                        n++;
-//                        if(n%1000 == 0)
-//                            System.out.println(n);
-                    }
-                }
-                long duration = System.currentTimeMillis() - start;
-                System.out.println("* " + n + " result(s) in " + duration + " ms *");
-                int limit = 5;
-                results.stream().limit(limit).forEach(System.out::println);
-                if (results.size() > limit)
-                    System.out.println("...");
-                System.out.println();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
+            ClientRequestManager.makeRequest(address, portNumber, userLine, true);
         }
-
-
     }
 }

@@ -98,6 +98,6 @@ public abstract class Dataset {
     public int size(){
         return dataset.size();
     }
-    public abstract void match(PrintWriter out, String type, String regex);
+    public abstract long match(PrintWriter out, String type, String regex);
 
 }
