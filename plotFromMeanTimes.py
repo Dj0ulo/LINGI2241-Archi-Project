@@ -28,15 +28,24 @@ def readData():
 
 
 
-x, y, PoissonMean = readData()
+nbIter, times, PoissonMean = readData()
 
-print(x)
-print(y)
+x = []
+for nb in nbIter:
+    if nb not in x:
+        x.append(nb)
+
+y = []
+for nb in x:
+    timefornb = []
+    for i in range(len(times)):
+        if nbIter[i] == nb:
+            timefornb.append(times[i])
+    y.append(np.mean(timefornb))
+    
 plt.plot(x, y, '-b')
-#plt.plot(label="Random method")
 plt.xlabel("Number of requests")
 plt.ylabel("Mean time per request")
 
 plt.title("Plot the mean time per requests depending on the number of requests with arrival time with Poisson mean of " + str(PoissonMean) + " seconds")
-#plt.legend()
 plt.show()

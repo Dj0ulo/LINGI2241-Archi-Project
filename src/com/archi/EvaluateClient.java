@@ -25,17 +25,19 @@ public class EvaluateClient extends BaseServer {
         int min = 5;
         int max = 20;
         int step = 5;
+        int iterPerNbIter = 10;
 
-        iterateOnNbRequests(min, max, step, portNumber, lambda);
+        iterateOnNbRequests(min, max, step, portNumber, lambda, iterPerNbIter);
     }
 
 
-    public static void iterateOnNbRequests(int min, int max, int step, int portNumber, double lambda) throws InterruptedException, IOException { //iterate from min to max with step step on each iteration, these are used as NbRequests
+    public static void iterateOnNbRequests(int min, int max, int step, int portNumber, double lambda, int iterPerNbIter) throws InterruptedException, IOException { //iterate from min to max with step step on each iteration, these are used as NbRequests
         FileWriter myWriter = new FileWriter("MeanTimes.txt", false);
         myWriter.write(lambda+"\r\n");
         myWriter.close();
         for(int i = min; i <= max; i+=step){
-            iteration(portNumber, i, lambda);
+            for(int j = 0; j< iterPerNbIter; j++)
+                iteration(portNumber, i, lambda);
         }
     }
 
