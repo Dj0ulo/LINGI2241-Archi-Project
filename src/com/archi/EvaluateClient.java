@@ -33,10 +33,10 @@ public class EvaluateClient {
 
         // distribution parameters
         double lambda = 1.0 / 1000; // mean time between 2 arrivals is 1/lambda
-        int min = 25;
-        int max = 100;
-        int step = 25;
-        int iterPerNbIter = 5;
+        int min = 6;
+        int max = 10;
+        int step = 2;
+        int iterPerNbIter = 1;
 
         iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
@@ -86,7 +86,7 @@ public class EvaluateClient {
         String[] requests = new String[nbRequests];
 
         for (int i = 0; i < nbRequests; i++) {
-            requests[i] = randomTypes() + ";" + chooseRegex(1, 8, 1, 30);
+            requests[i] = randomTypes() +";"+ chooseRegex(1, 4, 1, 30);
         }
 
 
