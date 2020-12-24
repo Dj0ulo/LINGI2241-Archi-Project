@@ -31,20 +31,20 @@ public class ClientRequestManager {
             long start = System.currentTimeMillis(); // start time
             toServer.println(request); // sending
 
-//            String serverLine;
-//            while ((serverLine = fromServer.readLine()) != null) {
-//                if (serverLine.equals(""))
-//                    break;
-//                else {
-//                    results.add(serverLine);
-//                }
-//            }
+            String serverLine;
+            while ((serverLine = fromServer.readLine()) != null) {
+                if (serverLine.equals(""))
+                    break;
+                else {
+                    results.add(serverLine);
+                }
+            }
 
-            byte[] buffer = inStream.readAllBytes();
+//            byte[] buffer = inStream.readAllBytes();
 
             duration = System.currentTimeMillis() - start;
 
-            results.addAll(Arrays.asList(new String(buffer, StandardCharsets.UTF_8).split("\n")));
+//            results.addAll(Arrays.asList(new String(buffer, StandardCharsets.UTF_8).split("\n")));
 
 
 

@@ -82,7 +82,7 @@ public class OptimizedDataset extends Dataset {
         out.write(match(type, regex));
         return System.currentTimeMillis() - start;
     }
-
+    @Override
     public String match(String type, String regex) {
         Pattern pattern = compileRegex(regex);
         if (pattern != null && !regex.equals("")) {

@@ -12,7 +12,7 @@ public class SimpleServer extends BaseServer {
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             Socket client;
             while ((client = serverSocket.accept()) != null) {
-                ServerRequestManager.respond(client, dataset);
+                ServerRequestManager.respond(client, dataset, true);
             }
         } catch (IOException e) {
             e.printStackTrace();

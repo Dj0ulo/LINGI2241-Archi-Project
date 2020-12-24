@@ -28,15 +28,15 @@ public class EvaluateClient {
         System.out.println("Dataset with " + regexDataset.entryNumber() + " regex loaded");
 
         // server info
-        address = "localhost";
+        address = "25.63.93.225"; //"25.44.244.228";
         port = 5678;
 
         // distribution parameters
-        double lambda = 1.0 / 1000; // mean time between 2 arrivals is 1/lambda
-        int min = 6;
+        double lambda = 1.0 / 3000; // mean time between 2 arrivals is 1/lambda
+        int min = 10;
         int max = 10;
-        int step = 2;
-        int iterPerNbIter = 1;
+        int step = 0;
+        int iterPerNbIter = 5;
 
         iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
@@ -86,7 +86,7 @@ public class EvaluateClient {
         String[] requests = new String[nbRequests];
 
         for (int i = 0; i < nbRequests; i++) {
-            requests[i] = randomTypes() +";"+ chooseRegex(1, 4, 1, 30);
+            requests[i] = randomTypes() +";"+ chooseRegex(1, 5, 1, 50);
         }
 
 

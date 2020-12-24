@@ -29,9 +29,9 @@ public class SimpleDataset extends Dataset{
         return System.currentTimeMillis() - start;
     }
 
-
-    public List<Dataset.Entry> match(String type, String regex) {
-        List<Dataset.Entry> result = new ArrayList<>();
+    @Override
+    public String match(String type, String regex) {
+        StringBuilder result = new StringBuilder();
         Pattern pattern = compileRegex(regex);
         if(pattern != null){
             int intType = type.equals("") ? -1 : Integer.parseInt(type);
@@ -39,17 +39,16 @@ public class SimpleDataset extends Dataset{
             for (Dataset.Entry line : this.dataset) {
                 if ((intType == -1 || intType == line.getType())
                         && pattern.matcher(line.getSentence()).matches()) {
-                    result.add(line);
+                    result.append(line).append("\n");
                 }
             }
         }
-        return result;
+        return result.toString().toString();
     }
     @Override
     public long match(PrintWriter out, String type, String regex){
         long start = System.currentTimeMillis();
-        List<Dataset.Entry> list = this.match(type, regex);
-        list.forEach(line -> out.println(line.getType()+"@@@"+line.getSentence()));
+        out.write(match(type, regex));
         return System.currentTimeMillis() - start;
     }
 }

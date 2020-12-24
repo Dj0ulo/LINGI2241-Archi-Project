@@ -106,6 +106,7 @@ public abstract class Dataset {
     }
 
     public abstract long match(PrintWriter out, String type, String regex);
+    public abstract String match(String type, String regex);
 
     private static String[] words(String sentence) {
         return words(sentence, 1);

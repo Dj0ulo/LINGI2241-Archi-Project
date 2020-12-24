@@ -30,6 +30,8 @@ def readData():
 
 nbIter, times, PoissonMean = readData()
 
+plt.hist(times, 20, density=1, facecolor='green', alpha=0.75)
+
 x = []
 for nb in nbIter:
     if nb not in x:
@@ -43,9 +45,9 @@ for nb in x:
             timefornb.append(times[i])
     y.append(np.mean(timefornb))
     
-plt.plot(x, y, '-b')
-plt.xlabel("Number of requests")
-plt.ylabel("Mean time per request")
+# plt.plot(x, y, '-b')
+# plt.xlabel("Number of requests")
+# plt.ylabel("Mean time per request")
 
-plt.title("Plot the mean time per requests depending on the number of requests with arrival time with Poisson mean of " + str(PoissonMean) + " seconds")
+# plt.title("Plot the mean time per requests depending on the number of requests with arrival time with Poisson mean of " + str(PoissonMean) + " seconds")
 plt.show()
