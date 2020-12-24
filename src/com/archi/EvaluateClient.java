@@ -52,24 +52,25 @@ public class EvaluateClient {
             e.printStackTrace();
         }
 
-            for (int i = min; i <= max; i += step) {// i = number of requests for that iteration
-                for (int j = 0; j < iterPerNbIter; j++) {
-                    try (FileWriter myWriter = new FileWriter(filename, true)) {
-                        // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
-                        // Writes mean times to MeanTimes.txt
-                        long[] durations = makeNRequests(i, lambda);
-                        long sum = LongStream.of(durations).sum(); // make the sum of the array
+        for (int i = min; i <= max; i += step) {// i = number of requests for that iteration
+            for (int j = 0; j < iterPerNbIter; j++) {
+                try (FileWriter myWriter = new FileWriter(filename, true)) {
+                    // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
+                    // Writes mean times to MeanTimes.txt
+                    long[] durations = makeNRequests(i, lambda);
+                    long sum = LongStream.of(durations).sum(); // make the sum of the array
 
-                        // print durations
-                        Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms :" +
-                                " mean = " + Log.RED + (sum / i) + " ms\n");
+                    // print durations
+                    Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms :" +
+                            " mean = " + Log.RED + (sum / i) + " ms\n");
 
-                        myWriter.write(i + "," + (sum / i) + "\n");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    for (long du : durations)
+                        myWriter.write(i + "," + du + "\n");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        }
 
 
     }
@@ -85,7 +86,7 @@ public class EvaluateClient {
         String[] requests = new String[nbRequests];
 
         for (int i = 0; i < nbRequests; i++) {
-            requests[i] = randomTypes() +";"+ chooseRegex(1, 8, 1, 30);
+            requests[i] = randomTypes() + ";" + chooseRegex(1, 8, 1, 30);
         }
 
 
@@ -95,7 +96,7 @@ public class EvaluateClient {
             final String request = requests[i];
 
             completionService.submit(() -> ClientRequestManager.makeRequest(address, port, request));
-            Log.p("N°" + (i + 1) +" " + Log.GREEN + requests[i] + Log.RED + " Waiting " + (int) waitingTimes[i] + " ms...");
+            Log.p("N°" + (i + 1) + " " + Log.GREEN + requests[i] + Log.RED + " Waiting " + (int) waitingTimes[i] + " ms...");
 
             for (int k = (int) waitingTimes[i] / 1000; k >= 0; k--) {
                 System.out.print(".");
@@ -183,7 +184,7 @@ public class EvaluateClient {
     private static String chooseRegex(int minWords, int maxWords, int minResults, int maxResults) throws Exception {
         String tot = "";
         for (int i = 0; i < maxResults - minResults + 1; i++)
-            tot+= regexDataset.match(""+(minResults + i), "^(\\.\\*\\w+){" + minWords + "," + maxWords + "}\\.\\*$");
+            tot += regexDataset.match("" + (minResults + i), "^(\\.\\*\\w+){" + minWords + "," + maxWords + "}\\.\\*$");
         OptimizedDataset tmp = new OptimizedDataset(tot);
         tmp.load();
         if (tmp.size() == 0)
