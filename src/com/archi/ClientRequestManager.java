@@ -17,7 +17,7 @@ public class ClientRequestManager {
         return makeRequest(address, port, request, false);
     }
     public static long makeRequest(String address, int port, String request, boolean print) {
-        return makeRequest(address, port, request, false, null);
+        return makeRequest(address, port, request, print, null);
     }
     public static long makeRequest(String address, int port, String request, boolean print, EvaluateClient.RequestParams requestParams){
         List<String> results = new ArrayList<>();

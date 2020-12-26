@@ -39,7 +39,7 @@ public class SimpleDataset extends Dataset{
             for (Dataset.Entry line : this.dataset) {
                 if ((intType == -1 || intType == line.getType())
                         && pattern.matcher(line.getSentence()).matches()) {
-                    result.append(line).append("\n");
+                    result.append(line.getType()).append("@@@").append(line.getSentence()).append("\n");
                 }
             }
         }

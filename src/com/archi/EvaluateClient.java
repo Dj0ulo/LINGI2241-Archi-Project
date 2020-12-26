@@ -18,6 +18,8 @@ public class EvaluateClient {
     private static int port;
     private static OptiFileDataset regexDataset;
 
+    private static int minWords, maxWords, minResults, maxResults;
+
     public static class RequestParams{
         private final String request;
         private final int nbWords;
@@ -57,20 +59,27 @@ public class EvaluateClient {
         random = new Random();
 
         // load dataset to make random request based on it
-        regexDataset = new OptiFileDataset("regex-list2.txt");
-        regexDataset.load();
+        regexDataset = new OptiFileDataset("regex-list50.txt");
+        regexDataset.load(280);
         System.out.println("Dataset with " + regexDataset.entryNumber() + " regex loaded");
 
         // server info
-        address = "2620:9b::193f:5de1";//""25.44.244.228";
+        address = "2620:9b::192c:f4e4";//2620:9b::193f:5de1";//""25.44.244.228";
         port = 5678;
 
         // distribution parameters
         double lambda = 1.0 / 500; // mean time between 2 arrivals is 1/lambda
-        int min = 4;
-        int max = 40;
+
+        //params regex
+        minWords = 1;
+        maxWords = 5;
+        minResults = 1;
+        maxResults = 50;
+
+        int min = 1;
+        int max = 1;
         int step = 4;
-        int iterPerNbIter = 3;
+        int iterPerNbIter = 50;
 
         iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
@@ -120,7 +129,7 @@ public class EvaluateClient {
         RequestParams [] requestParams = new RequestParams[nbRequests];
 
         for (int i = 0; i < nbRequests; i++) {
-            requests[i] = randomTypes() +";"+ chooseRegex(1, 5, 1, 50);
+            requests[i] = randomTypes() +";"+ chooseRegex(minWords, maxWords, minResults, maxResults);
             requestParams[i] = new RequestParams(requests[i], (long)waitingTimes[i]);
         }
 

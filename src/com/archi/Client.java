@@ -13,7 +13,7 @@ public class Client {
     public static void main(String[] args) {
         System.out.println("Starting manual client");
 
-        String address = "25.44.244.228";//"2620:9b::192c:f4e4";
+        String address = "2620:9b::193f:5de1";//""25.44.244.228";//"2620:9b::192c:f4e4";
         int portNumber = 5678;
         Scanner stdIn = new Scanner(System.in);
         System.out.println("Connection to the server");

@@ -21,11 +21,11 @@ public class RegexGenerator {
         dataset.load();
         System.out.println("Dataset loaded");
 
-        int regexNumber = 500, maxMatchLines = 1000;
+        int regexNumber = 500, maxMatchLines = 50;
         for(int i=0;i<regexNumber;i++){
             Log.p(Log.BLUE+"Generating regex n°"+i);
             String regex = generateRegex(dataset, maxMatchLines);
-            try (FileWriter myWriter = new FileWriter("regex-list1000.txt", true)) {
+            try (FileWriter myWriter = new FileWriter("regex-list50.txt", true)) {
                 myWriter.write(regex+"\n");
             } catch (IOException e) {
                 e.printStackTrace();
