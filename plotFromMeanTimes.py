@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 def readData():
     Requests = []
     Times = []
-    fd = open("MeanTimes.txt", "r")
+    fd = open("4-40-4-3-opti.txt", "r")
     PoissonMean = float(fd.readline())
     for x in fd:
         strings = x.split(',')
@@ -30,7 +30,8 @@ def readData():
 
 nbIter, times, PoissonMean = readData()
 
-plt.hist(times, 20, density=1, facecolor='green', alpha=0.75)
+print(len(times))
+plt.hist(times, bins=110, density=1, facecolor='green', alpha=0.75)
 
 x = []
 for nb in nbIter:

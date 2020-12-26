@@ -16,7 +16,10 @@ public class ClientRequestManager {
     public static long makeRequest(String address, int port, String request){
         return makeRequest(address, port, request, false);
     }
-    public static long makeRequest(String address, int port, String request, boolean print){
+    public static long makeRequest(String address, int port, String request, boolean print) {
+        return makeRequest(address, port, request, false, null);
+    }
+    public static long makeRequest(String address, int port, String request, boolean print, EvaluateClient.RequestParams requestParams){
         List<String> results = new ArrayList<>();
         long duration = -1;
         try (
@@ -46,7 +49,9 @@ public class ClientRequestManager {
 
 //            results.addAll(Arrays.asList(new String(buffer, StandardCharsets.UTF_8).split("\n")));
 
-
+            if(requestParams != null){
+                requestParams.responded(duration, results.size());
+            }
 
             if(print){
                 System.out.println("* " + results.size() + " result(s) in " + duration + " ms *");

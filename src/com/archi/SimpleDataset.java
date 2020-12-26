@@ -43,7 +43,7 @@ public class SimpleDataset extends Dataset{
                 }
             }
         }
-        return result.toString().toString();
+        return result.toString();
     }
     @Override
     public long match(PrintWriter out, String type, String regex){
