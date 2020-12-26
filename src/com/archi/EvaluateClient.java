@@ -14,6 +14,7 @@ public class EvaluateClient {
 
     private static Random random;
 
+    private static String serv;
     private static String address;
     private static int port;
     private static OptiFileDataset regexDataset;
@@ -58,28 +59,35 @@ public class EvaluateClient {
         // init random class
         random = new Random();
 
+        //params regex
+        minWords = 1;
+        maxWords = 5;
+        minResults = 100;
+        maxResults = 1000;
+
         // load dataset to make random request based on it
-        regexDataset = new OptiFileDataset("regex-list50.txt");
-        regexDataset.load(280);
+        regexDataset = new OptiFileDataset("regex-list"+maxResults+".txt");
+        regexDataset.load();
         System.out.println("Dataset with " + regexDataset.entryNumber() + " regex loaded");
 
         // server info
         address = "2620:9b::192c:f4e4";//2620:9b::193f:5de1";//""25.44.244.228";
-        port = 5678;
+
+
+        serv = "opti";
+        if(serv.equals("opti"))
+            port = 5678;
+        else
+            port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 500; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 2000; // mean time between 2 arrivals is 1/lambda
 
-        //params regex
-        minWords = 1;
-        maxWords = 5;
-        minResults = 1;
-        maxResults = 50;
 
-        int min = 1;
-        int max = 1;
-        int step = 4;
-        int iterPerNbIter = 50;
+        int min = 50;
+        int max = 50;
+        int step = 1;
+        int iterPerNbIter = 1;
 
         iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
@@ -88,7 +96,7 @@ public class EvaluateClient {
      * iterate from min to max with step step on each iteration, these are used as NbRequests
      */
     public static void iterateOnNbRequests(int min, int max, int step, double lambda, int iterPerNbIter) {
-        String filename = "lambda.txt";
+        String filename = "tests/rate-"+serv+"-l="+(int)(1/lambda)+"-maxwords="+maxWords+"-maxres="+maxResults+".csv";
         try (FileWriter myWriter = new FileWriter(filename, false)) {
             myWriter.write(lambda + "\n");
         } catch (Exception e) {
