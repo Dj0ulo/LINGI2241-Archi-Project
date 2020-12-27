@@ -74,20 +74,20 @@ public class EvaluateClient {
         address = "2620:9b::192c:f4e4";//2620:9b::193f:5de1";//""25.44.244.228";
 
 
-        serv = "opti";
+        serv = "simple";
         if(serv.equals("opti"))
             port = 5678;
         else
             port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 2000; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 1010; // mean time between 2 arrivals is 1/lambda
 
 
-        int min = 50;
-        int max = 50;
+        int min = 1;
+        int max = 1;
         int step = 1;
-        int iterPerNbIter = 1;
+        int iterPerNbIter = 100;
 
         iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
     }
