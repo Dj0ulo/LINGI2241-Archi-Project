@@ -8,7 +8,7 @@ public class SimpleServer extends BaseServer {
     public static void main(String[] args)  {
         init(false);
 
-        int portNumber = 5678;
+        int portNumber = 5666;
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             Socket client;
             while ((client = serverSocket.accept()) != null) {

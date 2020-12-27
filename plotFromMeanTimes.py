@@ -10,9 +10,12 @@ from matplotlib import pyplot as plt
 
 argv = sys.argv;
 # filename = "tests/rate-"+argv[1]+"-l="+argv[2]+"-maxres=1000.csv"
-filename = "tests/cache-opti-l=3000-maxwords=8-maxres=50.csv"
-print(filename)
-def readData():
+
+simple = "tests/results-simple-l=3000-maxwords=5-maxres=10000.csv"
+opti = "tests/results-opti-l=3000-maxwords=5-maxres=10000.csv"
+
+
+def readData(filename):
     waits = []
     Times = []
     fd = open(filename, "r")
@@ -31,11 +34,25 @@ def readData():
 
 
 
-waits, times, PoissonMean = readData()
+waitsopti, timesopti, PoissonMeanopti = readData(opti)
+waitssimple, timessimple, PoissonMeansimple = readData(simple)
 
-print(len(times), sum(times)/len(times))
-plt.hist(times, bins=100, density=1, facecolor='green', alpha=0.75)
 
+
+#print(len(timesopti), sum(timesopti)/len(timesopti))
+plt.hist(timessimple, bins=25, density=1, facecolor='blue', alpha=0.5, label="simple")
+plt.hist(timesopti, bins=25, density=1, facecolor='green', alpha=0.5, label="opti")
+plt.axvline(np.mean(timessimple), -0.005, np.max(np.append(timesopti,timessimple)), label='simple mean ('+np.mean(timessimple).astype('str')+')', c='b', dashes = (5, 2, 1, 2) )
+plt.axvline(np.mean(timesopti), -0.005, np.max(np.append(timesopti,timessimple)), label='opti mean ('+np.mean(timesopti).astype('str')+')', c='g', dashes = (5, 2, 1, 2) )
+
+plt.legend()
+
+plt.ylabel("Proportions of requests")
+plt.xlabel("time [ms]")
+
+plt.title("Distribution of the response time of the requests")
+ 
+ 
 # x = []
 # for nb in nbIter:
 #     if nb not in x:
@@ -50,8 +67,4 @@ plt.hist(times, bins=100, density=1, facecolor='green', alpha=0.75)
 #     y.append(np.mean(timefornb))
     
 # plt.plot(x, y, '-b')
-# plt.xlabel("Number of requests")
-# plt.ylabel("Mean time per request")
-
-# plt.title("Plot the mean time per requests depending on the number of requests with arrival time with Poisson mean of " + str(PoissonMean) + " seconds")
 plt.show()
