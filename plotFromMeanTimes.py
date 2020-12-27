@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 
 argv = sys.argv;
 # filename = "tests/rate-"+argv[1]+"-l="+argv[2]+"-maxres=1000.csv"
-filename = "tests/cache-opti-l=3000-maxwords=8-maxres=50.csv"
+filename = "tests/lambda-opti.csv"
 print(filename)
 def readData():
     waits = []
