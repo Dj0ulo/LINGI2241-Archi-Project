@@ -21,7 +21,7 @@ public class EvaluateClient {
 
     private static int minWords, maxWords, minResults, maxResults;
 
-    public static class RequestParams{
+    public static class RequestParams {
         private final String request;
         private final int nbWords;
         private int nbTypes;
@@ -35,12 +35,13 @@ public class EvaluateClient {
 
             String[] r = request.split(";");
             this.nbTypes = r[0].split(",").length;
-            if(r[0].equals("") && nbTypes == 1){
+            if (r[0].equals("") && nbTypes == 1) {
                 nbTypes = 6;
             }
             this.nbWords = r[1].split("\\.\\*").length - 2;
         }
-        void responded(long responseTime, int nbLines){
+
+        void responded(long responseTime, int nbLines) {
             this.responseTime = responseTime;
             this.nbLines = nbLines;
         }
@@ -61,12 +62,12 @@ public class EvaluateClient {
 
         //params regex
         minWords = 1;
-        maxWords = 5;
-        minResults = 100;
-        maxResults = 1000;
+        maxWords = 8;
+        minResults = 0;
+        maxResults = 50;
 
         // load dataset to make random request based on it
-        regexDataset = new OptiFileDataset("regex-list"+maxResults+".txt");
+        regexDataset = new OptiFileDataset("regex-list" + maxResults + ".txt");
         regexDataset.load();
         System.out.println("Dataset with " + regexDataset.entryNumber() + " regex loaded");
 
@@ -74,50 +75,42 @@ public class EvaluateClient {
         address = "2620:9b::192c:f4e4";//2620:9b::193f:5de1";//""25.44.244.228";
 
 
-        serv = "simple";
-        if(serv.equals("opti"))
+        serv = "opti";
+        if (serv.equals("opti"))
             port = 5678;
         else
             port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 1010; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 3500; // mean time between 2 arrivals is 1/lambda
 
+        int nbRequests = 50;
+        int iterations = 1;
 
-        int min = 1;
-        int max = 1;
-        int step = 1;
-        int iterPerNbIter = 100;
-
-        iterateOnNbRequests(min, max, step, lambda, iterPerNbIter);
+        iterateOnNbRequests(nbRequests, lambda, iterations);
     }
 
     /**
      * iterate from min to max with step step on each iteration, these are used as NbRequests
      */
-    public static void iterateOnNbRequests(int min, int max, int step, double lambda, int iterPerNbIter) {
-        String filename = "tests/rate-"+serv+"-l="+(int)(1/lambda)+"-maxwords="+maxWords+"-maxres="+maxResults+".csv";
+    public static void iterateOnNbRequests(int nbRequests, double lambda, int iterations) {
+        String filename = "tests/" +
+                "rate-" + serv + "-l=" + (int) (1 / lambda) + "-maxwords=" + maxWords + "-maxres=" + maxResults +"-nbreq="+nbRequests+".csv";
         try (FileWriter myWriter = new FileWriter(filename, false)) {
             myWriter.write(lambda + "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        for (int i = min; i <= max; i += step) {// i = number of requests for that iteration
-            for (int j = 0; j < iterPerNbIter; j++) {
-                try (FileWriter myWriter = new FileWriter(filename, true)) {
-                    // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule with lambda of lambda.
-                    // Writes mean times to MeanTimes.txt
-                    RequestParams [] requestParams = makeNRequests(i, lambda);
+        for (int i = 0; i < iterations; i++) {
+            try (FileWriter myWriter = new FileWriter(filename, true)) {
+                // Sends NbRequests requests to server at port portNumber and with arrivals following Poisson rule.
+                RequestParams[] requestParams = makeNRequests(nbRequests, lambda);
 
-                    // print durations
-//                    Log.p(Log.PURPLE + "Durations" + Log.RESET + " = " + Arrays.toString(durations) + " ms");
-
-                    for (RequestParams rp : requestParams)
-                        myWriter.write(rp+"\n");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                for (RequestParams rp : requestParams)
+                    myWriter.write(rp + "\n");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -128,17 +121,17 @@ public class EvaluateClient {
     /**
      * calculate the arrival times and  launches the thread following these timers
      */
-    public static RequestParams [] makeNRequests(int nbRequests, double lambda) throws Exception {
+    public static RequestParams[] makeNRequests(int nbRequests, double lambda) throws Exception {
         Log.p(Log.BLUE + "* Making " + nbRequests + " requests *");
         double[] waitingTimes = getPoissons(lambda, nbRequests);
 
         String[] requests = new String[nbRequests];
 
-        RequestParams [] requestParams = new RequestParams[nbRequests];
+        RequestParams[] requestParams = new RequestParams[nbRequests];
 
         for (int i = 0; i < nbRequests; i++) {
-            requests[i] = randomTypes() +";"+ chooseRegex(minWords, maxWords, minResults, maxResults);
-            requestParams[i] = new RequestParams(requests[i], (long)waitingTimes[i]);
+            requests[i] = randomTypes() + ";" + chooseRegex(minWords, maxWords, minResults, maxResults);
+            requestParams[i] = new RequestParams(requests[i], (long) waitingTimes[i]);
         }
 
 
@@ -150,7 +143,7 @@ public class EvaluateClient {
             completionService.submit(() -> ClientRequestManager.makeRequest(address, port, rp.getRequest(), false, rp));
             Log.p("N°" + (i + 1) + " " + Log.GREEN + requests[i] + Log.RED + " Waiting " + (int) waitingTimes[i] + " ms...");
 
-            if(i < nbRequests-1) {
+            if (i < nbRequests - 1) {
                 for (int k = (int) waitingTimes[i] / 1000; k >= 0; k--) {
                     System.out.print(".");
                     Thread.sleep(1000);
