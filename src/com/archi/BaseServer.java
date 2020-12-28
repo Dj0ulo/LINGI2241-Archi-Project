@@ -8,6 +8,9 @@ import java.util.ArrayList;
 public abstract class BaseServer {
     protected static Dataset dataset;
 
+    /**
+     * Load OptiFileDataset or SimpleDataset based on whether or not opti is true
+     */
     protected static void init(boolean opti) {
         if (opti)
             System.out.println("Starting *optimized* server");

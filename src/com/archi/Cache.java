@@ -10,8 +10,16 @@ import java.util.Map;
  * https://stackoverflow.com/questions/21117636/how-to-implement-a-least-frequently-used-lfu-cache#23668899
  */
 
+/**
+ * A simple implemententaion of an LFU cache where ecah entry is identified by a type and a regex and contains the list
+ * of line indexes in the dataset
+ */
 
 public class Cache {
+
+    /**
+     * The class that represents an entry in the cache
+     */
     class Entry {
         private Integer[] lines;
         private int frequency;
@@ -50,12 +58,18 @@ public class Cache {
         this.size = size;
     }
 
+    /**
+     * Add an entry
+     */
     public void add(String type, String regex, Integer[] lines) {
         if (isFull())
             map.remove(getLFUKey());
         map.put(type+";"+regex, new Entry(lines));
     }
 
+    /**
+     * @return the least frequently used key
+     */
     public String getLFUKey() {
         String key = "";
         int minFreq = Integer.MAX_VALUE;
@@ -70,6 +84,9 @@ public class Cache {
         return key;
     }
 
+    /**
+     * @return the list of line indexes in the dataset corresponding to a regex and a type
+     */
     public Integer[] get(String type, String regex) {
         String key = type+";"+regex;
         if (map.containsKey(key))  // cache hit
@@ -82,6 +99,9 @@ public class Cache {
         return null; // cache miss
     }
 
+    /**
+     * @return true if the cache is full
+     */
     public boolean isFull() {
         return map.size() == size;
     }

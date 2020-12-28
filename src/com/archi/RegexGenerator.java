@@ -13,6 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Utility class to create regex
+ */
 public class RegexGenerator {
 
     public static void main(String[] args) {
@@ -21,7 +24,8 @@ public class RegexGenerator {
         dataset.load();
         System.out.println("Dataset loaded");
 
-        int regexNumber = 500, maxMatchLines = 100000;
+        int regexNumber = 500, // number of regex to be generated
+                maxMatchLines = 100000; // maximum number of lines that the regex will match in the db
         for(int i=0;i<regexNumber;i++){
             Log.p(Log.BLUE+"Generating regex n°"+i);
             String regex = generateRegex(dataset, maxMatchLines);
@@ -35,14 +39,12 @@ public class RegexGenerator {
 
     }
 
-    public static String contains(String str) {
-        return ".*" + str + ".*";
-    }
-
-    public static String all() {
-        return ".*";
-    }
-
+    /**
+     * @param dataset the dataset
+     * @param sizeMin minimum number of characters that contains the word
+     * @param exceptions words that can not be returned
+     * @return a random word that is in the top 10 most frequent ones
+     */
     public static String randomMostFrequentWord(Dataset dataset, int sizeMin, List<String> exceptions) {
         List<Map.Entry<String, Integer>> words = dataset.wordFreq()
                 .entrySet()
@@ -65,7 +67,9 @@ public class RegexGenerator {
     }
 
     /**
-     * @param max
+     * This function takes a random word in a dataset.  Then  it chooses  another  word  among  the  lines  of
+     * the  dataset  that  contains  this  word  and  it  keeps  doing  that  until  the  number  of  lines  is
+     * below  a  certain  threshold.   The  final  regex  looks  like  this  :.*firstword.*secondword.*thirdword.*
      * @return a regular expression that matches to max number of lines in a dataset
      */
     public static String generateRegex(OptimizedDataset dataset, int max){
@@ -81,9 +85,8 @@ public class RegexGenerator {
             dataset = new OptimizedDataset(dataset.match("", regex));
             dataset.load();
 
-//            lines = dataset.match("", all()).split("\n").length;
             lines = dataset.size();
-//            Log.p(words+" "+lines);
+
             if(lines <= max){
                 break;
             }

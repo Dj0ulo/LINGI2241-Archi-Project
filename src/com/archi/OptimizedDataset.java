@@ -5,6 +5,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * Dataset optimized with :
+ * - Sorting by types and keeping the indexes of the first element with each type
+ * - Removing duplicates and taking count of them in Dataset.Entry
+ * - Caching results
+ */
 public class OptimizedDataset extends Dataset {
     private final Stream<String> stream;
     private final HashMap<Integer, BoundType> types = new HashMap<>();
@@ -42,10 +48,12 @@ public class OptimizedDataset extends Dataset {
 
         List<Dataset.Entry> tmpList = new ArrayList<>();
 
-        stream.limit(number).sorted().forEach(line -> {
-            if (!line.equals("")) tmpList.add(new Dataset.Entry(line.split("@@@")));
-        });
-        // sorted stream !
+        stream.limit(number)
+                .sorted()// sorted stream !
+                .forEach(line -> {
+                    if (!line.equals("")) tmpList.add(new Dataset.Entry(line.split("@@@")));
+                });
+
 
         // remove duplicates
         for (int i = 0, k = 1; i < tmpList.size(); i++) {
@@ -82,11 +90,12 @@ public class OptimizedDataset extends Dataset {
         out.write(match(type, regex));
         return System.currentTimeMillis() - start;
     }
+
     @Override
     public String match(String type, String regex) {
         Pattern pattern = compileRegex(regex);
         if (pattern != null && !regex.equals("")) {
-            boolean all = regex.equals(".*");
+            boolean all = regex.equals(".*"); // if the regex matches all sentences
 
             int intType = type.equals("") ? -1 : Integer.parseInt(type);
             BoundType bounds = indexType(intType);
@@ -94,7 +103,7 @@ public class OptimizedDataset extends Dataset {
             StringBuilder result = new StringBuilder();
 
             Integer[] cacheLines = cache.get(type, regex);
-            if (cacheLines == null) {
+            if (cacheLines == null) {// if the regex is not in the cache
                 for (int i = bounds.start; i < bounds.end; i++) {
                     Dataset.Entry entry = this.dataset.get(i);
                     if (all || pattern.matcher(entry.getSentence()).matches()) {
@@ -102,6 +111,7 @@ public class OptimizedDataset extends Dataset {
                         result.append(entry);
                     }
                 }
+                //add to cache
                 cache.add(type, regex, indexes.toArray(new Integer[0]));
             } else {
                 for (Integer cacheLine : cacheLines) {
@@ -113,6 +123,9 @@ public class OptimizedDataset extends Dataset {
         return "";
     }
 
+    /**
+     * @return the boundaries (indexes) of a type in the dataset
+     */
     private BoundType indexType(int type) {
         if (type == -1)
             return new BoundType(0, this.dataset.size());

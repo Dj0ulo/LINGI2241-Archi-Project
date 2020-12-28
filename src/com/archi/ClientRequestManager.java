@@ -11,8 +11,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Static class with only one overloaded function that create a TCP connection and send one request
+ */
 public class ClientRequestManager {
-
     public static long makeRequest(String address, int port, String request){
         return makeRequest(address, port, request, false);
     }
@@ -23,7 +25,7 @@ public class ClientRequestManager {
         List<String> results = new ArrayList<>();
         long duration = -1;
         try (
-                Socket socket = new Socket(address, port);
+                Socket socket = new Socket(address, port); // creating tcp connection
                 PrintWriter toServer = new PrintWriter(socket.getOutputStream(), true);
                 InputStream inStream = socket.getInputStream();
                 BufferedReader fromServer = new BufferedReader(new InputStreamReader(inStream));
@@ -34,6 +36,7 @@ public class ClientRequestManager {
             long start = System.currentTimeMillis(); // start time
             toServer.println(request); // sending
 
+            // read received lines
             String serverLine;
             while ((serverLine = fromServer.readLine()) != null) {
                 if (serverLine.equals(""))
@@ -43,16 +46,14 @@ public class ClientRequestManager {
                 }
             }
 
-//            byte[] buffer = inStream.readAllBytes();
-
+            // duration since the sending of the request = response time
             duration = System.currentTimeMillis() - start;
-
-//            results.addAll(Arrays.asList(new String(buffer, StandardCharsets.UTF_8).split("\n")));
 
             if(requestParams != null){
                 requestParams.responded(duration, results.size());
             }
 
+            // print or not for manual debugging
             if(print){
                 System.out.println("* " + results.size() + " result(s) in " + duration + " ms *");
                 int limit = 5;

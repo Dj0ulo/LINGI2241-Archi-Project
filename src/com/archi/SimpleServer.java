@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Simple server single threaded
+ */
 public class SimpleServer extends BaseServer {
     public static void main(String[] args)  {
         init(false);
