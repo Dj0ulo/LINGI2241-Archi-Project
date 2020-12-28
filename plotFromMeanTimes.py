@@ -12,8 +12,8 @@ argv = sys.argv;
 # filename = "tests/rate-"+argv[1]+"-l="+argv[2]+"-maxres=1000.csv"
 
 
-simple = "tests/lambda-simple-1000.csv"
-opti = "tests/lambda-opti-1000.csv"
+simple = "tests/rate-simple-l=3499-maxwords=5-maxres=1000-nbreq=50.csv"
+opti = "tests/rate-opti-l=3499-maxwords=5-maxres=1000-nbreq=50.csv"
 
 
 def readData(filename):
@@ -42,6 +42,10 @@ waitssimple, timessimple, PoissonMeansimple = readData(simple)
 
 
 print(len(timesopti), sum(timesopti)/len(timesopti))
+
+plt.figure(figsize=[6.4, 2.5])
+
+
 plt.hist(timessimple, bins=25, density=1, facecolor='blue', alpha=0.5, label="simple")
 plt.hist(timesopti, bins=25, density=1, facecolor='green', alpha=0.5, label="opti")
 plt.axvline(np.mean(timessimple), -0.005, np.max(np.append(timesopti,timessimple)), label='simple mean ('+np.mean(timessimple).astype('str')+')', c='b', dashes = (5, 2, 1, 2) )
