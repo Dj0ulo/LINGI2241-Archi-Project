@@ -12,8 +12,8 @@ argv = sys.argv;
 # filename = "tests/rate-"+argv[1]+"-l="+argv[2]+"-maxres=1000.csv"
 
 
-simple = "tests/rate-simple-l=3499-maxwords=5-maxres=1000-nbreq=50.csv"
-opti = "tests/rate-opti-l=3499-maxwords=5-maxres=1000-nbreq=50.csv"
+simple = "tests/results-simple-l=3000-maxwords=5-maxres=10000.csv"
+opti = "tests/results-opti-l=3000-maxwords=5-maxres=10000.csv"
 
 
 def readData(filename):
