@@ -63,8 +63,8 @@ public class EvaluateClient {
         //params regex
         minWords = 1;
         maxWords = 5;
-        minResults = 1000;
-        maxResults = 10000;
+        minResults = 100;
+        maxResults = 1000;
 
         // load dataset to make random request based on it
         regexDataset = new OptiFileDataset("regex-list" + maxResults + ".txt");
@@ -75,14 +75,14 @@ public class EvaluateClient {
         address = "2620:9b::192c:f4e4";//""25.44.244.228";
 
 
-        serv = "simple";
+        serv = "opti";
         if (serv.equals("opti"))
             port = 5678;
         else
             port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 3000; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 250; // mean time between 2 arrivals is 1/lambda
 
         int nbRequests = 50;
         int iterations = 1;
@@ -95,7 +95,7 @@ public class EvaluateClient {
      */
     public static void iterateOnNbRequests(int nbRequests, double lambda, int iterations) {
         String filename = "tests/" +
-                "results-" + serv + "-l=" + (int) (1 / lambda) + "-maxwords=" + maxWords + "-maxres=" + maxResults +"-nbreq="+nbRequests+".csv";
+                "rate-" + serv + "-l=" + (int) (1 / lambda) + "-maxwords=" + maxWords + "-maxres=" + maxResults +"-nbreq="+nbRequests+".csv";
         try (FileWriter myWriter = new FileWriter(filename, false)) {
             myWriter.write(lambda + "\n");
         } catch (Exception e) {

@@ -8,65 +8,53 @@ import sys
 import numpy as np
 from matplotlib import pyplot as plt
 
-argv = sys.argv;
-# filename = "tests/rate-"+argv[1]+"-l="+argv[2]+"-maxres=1000.csv"
-
-
 simple = "tests/results-simple-l=3000-maxwords=5-maxres=10000.csv"
-opti = "tests/results-opti-l=3000-maxwords=5-maxres=10000.csv"
+opti = "tests/results-simple-l=3000-maxwords=5-maxres=10000-nbreq=50.csv"
 
 
 def readData(filename):
-
     waits = []
-    Times = []
+    times = []
+    lines = []
+    words = []
     fd = open(filename, "r")
     PoissonMean = float(fd.readline())
     for x in fd:
         strings = x.split(';')
-        wait = int(strings[4])
-        Words = int(strings[3])
-        Time = float (strings[5])
-        
-        waits.append(wait)
-        Times.append(Time)
-    
+        types = int(strings[2])
+        if types == 0 :
+            types = 6
+        words.append(len(strings[1])*types)
+        waits.append(int(strings[4]))
+        times.append(float(strings[5]))
+        lines.append(float(strings[6]))
     fd.close()
-    return np.asarray(waits), np.asarray(Times), PoissonMean
+    return lines, np.asarray(words), np.asarray(waits), np.asarray(times), PoissonMean
 
 
-
-waitsopti, timesopti, PoissonMeanopti = readData(opti)
-waitssimple, timessimple, PoissonMeansimple = readData(simple)
+linesOpti, wordsOpti, waitsopti, timesopti, PoissonMeanopti = readData(opti)
+linesSimple, wordsSimple, waitssimple, timessimple, PoissonMeansimple = readData(simple)
 
 
 
 #print(len(timesopti), sum(timesopti)/len(timesopti))
-plt.hist(timessimple, bins=25, density=1, facecolor='blue', alpha=0.5, label="simple")
-plt.hist(timesopti, bins=25, density=1, facecolor='green', alpha=0.5, label="opti")
-plt.axvline(np.mean(timessimple), -0.005, np.max(np.append(timesopti,timessimple)), label='simple mean ('+np.mean(timessimple).astype('str')+')', c='b', dashes = (5, 2, 1, 2) )
-plt.axvline(np.mean(timesopti), -0.005, np.max(np.append(timesopti,timessimple)), label='opti mean ('+np.mean(timesopti).astype('str')+')', c='g', dashes = (5, 2, 1, 2) )
+# plt.hist(timessimple, bins=25, density=1, facecolor='blue', alpha=0.5, label="simple")
+# plt.hist(timesopti, bins=25, density=1, facecolor='green', alpha=0.5, label="opti")
+# plt.axvline(np.mean(timessimple), -0.005, np.max(np.append(timesopti,timessimple)), label='simple mean ('+np.mean(timessimple).astype('str')+')', c='b', dashes = (5, 2, 1, 2) )
+# plt.axvline(np.mean(timesopti), -0.005, np.max(np.append(timesopti,timessimple)), label='opti mean ('+np.mean(timesopti).astype('str')+')', c='g', dashes = (5, 2, 1, 2) )
 
-plt.legend()
+# plt.legend()
 
-plt.ylabel("Proportions of requests")
-plt.xlabel("time [ms]")
+# plt.ylabel("Proportions of requests")
+# plt.xlabel("time [ms]")
 
-plt.title("Distribution of the response time of the requests")
- 
- 
-# x = []
-# for nb in nbIter:
-#     if nb not in x:
-#         x.append(nb)
+# plt.title("Distribution of the response time of the requests")
 
-# y = []
-# for nb in x:
-#     timefornb = []
-#     for i in range(len(times)):
-#         if nbIter[i] == nb:
-#             timefornb.append(times[i])
-#     y.append(np.mean(timefornb))
+# plt.show()
+
     
-# plt.plot(x, y, '-b')
+plt.plot(linesOpti, timesopti, '.')
+plt.show()
+
+plt.plot(wordsOpti, timesopti, '.')
 plt.show()
