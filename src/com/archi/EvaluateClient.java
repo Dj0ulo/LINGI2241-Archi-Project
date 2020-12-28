@@ -62,9 +62,9 @@ public class EvaluateClient {
 
         //params regex
         minWords = 1;
-        maxWords = 8;
-        minResults = 0;
-        maxResults = 50;
+        maxWords = 5;
+        minResults = 100;
+        maxResults = 1000;
 
         // load dataset to make random request based on it
         regexDataset = new OptiFileDataset("regex-list" + maxResults + ".txt");
@@ -72,7 +72,7 @@ public class EvaluateClient {
         System.out.println("Dataset with " + regexDataset.entryNumber() + " regex loaded");
 
         // server info
-        address = "2620:9b::192c:f4e4";//2620:9b::193f:5de1";//""25.44.244.228";
+        address = "2620:9b::192c:f4e4";//""25.44.244.228";
 
 
         serv = "opti";
@@ -82,7 +82,7 @@ public class EvaluateClient {
             port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 3500; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 250; // mean time between 2 arrivals is 1/lambda
 
         int nbRequests = 50;
         int iterations = 1;
