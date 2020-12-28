@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * This class does the same thing as OptimizedDataset but it can load the data from a file
+ */
 public class OptiFileDataset extends OptimizedDataset{
     public OptiFileDataset() {
         super(fileToStream("dbdata.txt"));

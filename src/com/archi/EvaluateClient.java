@@ -21,6 +21,9 @@ public class EvaluateClient {
 
     private static int minWords, maxWords, minResults, maxResults;
 
+    /**
+     * Class to log a request and how it performed
+     */
     public static class RequestParams {
         private final String request;
         private final int nbWords;
@@ -62,9 +65,9 @@ public class EvaluateClient {
 
         //params regex
         minWords = 1;
-        maxWords = 5;
-        minResults = 100;
-        maxResults = 1000;
+        maxWords = 8;
+        minResults = 0;
+        maxResults = 10000;
 
         // load dataset to make random request based on it
         regexDataset = new OptiFileDataset("regex-list" + maxResults + ".txt");
@@ -82,10 +85,10 @@ public class EvaluateClient {
             port = 5666;
 
         // distribution parameters
-        double lambda = 1.0 / 250; // mean time between 2 arrivals is 1/lambda
+        double lambda = 1.0 / 1010; // mean time between 2 arrivals is 1/lambda
 
-        int nbRequests = 50;
-        int iterations = 1;
+        int nbRequests = 1;
+        int iterations = 200;
 
         iterateOnNbRequests(nbRequests, lambda, iterations);
     }
@@ -119,7 +122,7 @@ public class EvaluateClient {
 
 
     /**
-     * calculate the arrival times and  launches the thread following these timers
+     * Make nbRequests with a time Poisson distribution betwwen them
      */
     public static RequestParams[] makeNRequests(int nbRequests, double lambda) throws Exception {
         Log.p(Log.BLUE + "* Making " + nbRequests + " requests *");
@@ -129,6 +132,7 @@ public class EvaluateClient {
 
         RequestParams[] requestParams = new RequestParams[nbRequests];
 
+        // creating the string of a request
         for (int i = 0; i < nbRequests; i++) {
             requests[i] = randomTypes() + ";" + chooseRegex(minWords, maxWords, minResults, maxResults);
             requestParams[i] = new RequestParams(requests[i], (long) waitingTimes[i]);
@@ -140,6 +144,7 @@ public class EvaluateClient {
         for (int i = 0; i < nbRequests; i++) {
             final RequestParams rp = requestParams[i];
 
+            // creating the thread that sends a request
             completionService.submit(() -> ClientRequestManager.makeRequest(address, port, rp.getRequest(), false, rp));
             Log.p("N°" + (i + 1) + " " + Log.GREEN + requests[i] + Log.RED + " Waiting " + (int) waitingTimes[i] + " ms...");
 
@@ -153,12 +158,11 @@ public class EvaluateClient {
             }
         }
         System.out.println("Waiting responses...");
-        // wait for thread and retrieve durations
-        long[] durations = new long[nbRequests];
+        // wait for threads
         for (int i = 0; i < nbRequests; i++) {
             Future<Long> future = completionService.take();
             try {
-                durations[i] = future.get(); // waiting for the result of a thread
+                future.get(); // waiting for the en of a thread
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
@@ -180,6 +184,9 @@ public class EvaluateClient {
         return waitingTimes;
     }
 
+    /**
+     * @return between 0 and 4 types (types = 0|1|2|3|4|5)
+     */
     private static String randomTypes() {
         StringBuilder types = new StringBuilder();
 
@@ -203,31 +210,14 @@ public class EvaluateClient {
     }
 
     /**
-     * @return a string respecting the format of requests specified in the project description.
-     * number of tags, tags, number of line and word in the line each follow a uniform distribution
+     * Choose a regex in the file of regex loaded
+     * @param minWords minimum number words in the regex
+     * @param maxWords maximum number words in the regex
+     * @param minResults minimum number of lines that the regex will match
+     * @param maxResults maximum number of lines
+     * @return a regex
+     * @throws Exception if no regex corresponds to this parameters in the file
      */
-    private static String randomString() {
-
-        StringBuilder request = new StringBuilder().append(randomTypes());
-
-        String randomString = regexDataset.getRandomString();
-        StringBuilder purString = new StringBuilder();
-
-        for (int i = 0; i < randomString.length(); i++) {
-            if (randomString.charAt(i) == '.')
-                purString.append("\\.");
-            else
-                purString.append(randomString.charAt(i));
-        }
-
-        String[] words = purString.toString().split(" ");
-        purString = new StringBuilder(words[random.nextInt(words.length)]);
-
-        request.append(";.*").append(purString).append(".*");
-
-        return request.toString();
-    }
-
     private static String chooseRegex(int minWords, int maxWords, int minResults, int maxResults) throws Exception {
         String tot = "";
         for (int i = 0; i < maxResults - minResults + 1; i++)

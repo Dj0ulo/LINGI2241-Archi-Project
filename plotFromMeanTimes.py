@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 simple = "tests/results-simple-l=3000-maxwords=5-maxres=10000.csv"
-opti = "tests/results-simple-l=3000-maxwords=5-maxres=10000-nbreq=50.csv"
+opti = "tests/rate-opti-l=1010-maxwords=8-maxres=10000-nbreq=1.csv"
 
 
 def readData(filename):

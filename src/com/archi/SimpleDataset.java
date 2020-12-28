@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * Simple dataset
+ */
 public class SimpleDataset extends Dataset{
     private final String filename;
 
@@ -29,6 +32,9 @@ public class SimpleDataset extends Dataset{
         return System.currentTimeMillis() - start;
     }
 
+    /**
+     * linearly parses every entries
+     */
     @Override
     public String match(String type, String regex) {
         StringBuilder result = new StringBuilder();

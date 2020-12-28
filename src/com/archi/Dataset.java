@@ -6,10 +6,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+/**
+ * Abstract class having a lot of utility functions
+ */
 public abstract class Dataset {
 
     protected List<Dataset.Entry> dataset = new ArrayList<>();
 
+    /**
+     * Class describing an entry in the dataset, each entry has a type, a sentence and a count that reprensents
+     * the number of times it appears in the database. Count is always = 1 by default
+     */
     protected static class Entry implements Comparable<Entry> {
         private final int type;
         private final String sentence;
@@ -74,12 +81,23 @@ public abstract class Dataset {
         }
     }
 
+    /**
+     * Load all the lines in the database
+     * @return the duration of the loading
+     */
     public long load() {
         return load(Integer.MAX_VALUE);
     }
 
+    /**
+     * @param number number of lines in the database to be loaded
+     * @return the duration of the loading
+     */
     public abstract long load(int number);
 
+    /**
+     * @return a random sentence in the dataset
+     */
     public String getRandomString() {
         Random rand2 = new Random();
         int index = rand2.nextInt() % dataset.size();
@@ -95,23 +113,35 @@ public abstract class Dataset {
         return dataset.size();
     }
 
+    /**
+     * @return a Java Pattern based on a regex
+     */
     protected Pattern compileRegex(String regex) {
         try {
-            Pattern pattern = Pattern.compile(regex);
-            return pattern;
+            return Pattern.compile(regex);
         } catch (PatternSyntaxException e) {
             Log.p(Log.RED + e.getMessage());
         }
         return null;
     }
 
+    /**
+     * Print in the stream out the lines of the database that matches the type and the regex
+     * @return the time it took
+     */
     public abstract long match(PrintWriter out, String type, String regex);
+
+    /**
+     * @return the lines of the database that matches the type and the regex
+     */
     public abstract String match(String type, String regex);
 
+    /**
+     * Static function that returns an array of words in a sentence
+     */
     private static String[] words(String sentence) {
         return words(sentence, 1);
     }
-
     private static String[] words(String sentence, int sizeMin) {
         Pattern p = Pattern.compile("[a-zA-Z]{"+sizeMin+",}");
 
@@ -123,6 +153,9 @@ public abstract class Dataset {
         return list.toArray(new String[0]);
     }
 
+    /**
+     * @return random entry
+     */
     public Entry random() {
         return dataset.get((int) (Math.random() * dataset.size()));
     }
@@ -139,6 +172,9 @@ public abstract class Dataset {
         return random().getType();
     }
 
+    /**
+     * @return an Hashmap with key corresponding to the words in the database and their count
+     */
     public HashMap<String, Integer> wordFreq() {
         HashMap<String, Integer> f = new HashMap<>();
         this.dataset.forEach(entry -> {
@@ -153,22 +189,4 @@ public abstract class Dataset {
         });
         return f;
     }
-
-    public void charFreq() {
-        HashMap<Character, Integer> f = new HashMap<>();
-        this.dataset.forEach(entry -> {
-            for (int i = 0; i < entry.getSentence().length(); i++) {
-                Character c = entry.getSentence().charAt(i);
-                if (f.containsKey(c)) {
-                    f.put(c, f.get(c) + entry.getCount());
-                } else {
-                    f.put(c, entry.getCount());
-                }
-            }
-        });
-
-        f.forEach((k, v) -> System.out.println((int) k + " : " + v));
-        System.out.println(f.size() + " different char");
-    }
-
 }
